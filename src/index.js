@@ -49,12 +49,15 @@ const removeClassOnArray = (array, selector, classname) => {
 
 
 // Sets default based on time of day
-const getTimeOfDay = () => {
+const setDeliveryDayOptions = () => {
   const weekdays = [...deliveryDateSelector.querySelectorAll('.delivery__date-weekday')];
   const saturdays = [...deliveryDateSelector.querySelectorAll('.delivery__date-saturday')];
-  const nextDayDelivery = weekdays[0];
-  const nextDayParent = nextDayDelivery.parentElement;
-  const nextFreeDelivery = weekdays[1];
+  const weekdayOne = weekdays[0];
+  const weekdayOneParent = weekdayOne.parentElement;
+  const weekdayTwo = weekdays[1];
+  const weekdayThree = weekdays[2];
+  const saturdayOne = saturdays[0];
+  const saturdayOneParent = saturdayOne.parentElement;
 
   // Mock day & time
   // const currentTime = moment().set('hour', 9).get('hour');
@@ -64,61 +67,42 @@ const getTimeOfDay = () => {
   const today = moment().format('llll');
   const currentTime = moment().get('hour');
 
-  // add swicth statement here
-
-
   // Saturday before 12
   if (today.includes('Sat') || today.includes('Sun')) {
-    // remove first saturday
-    saturdays[0].parentElement.parentElement.removeChild(saturdays[0].parentElement);
-
-    // set weekday [0]  to be removed
-    nextDayParent.parentElement.removeChild(nextDayParent);
-
-    // set weekday [1] to be next day deliverey
-    weekdays[1].dataset.price = '12.00';
-    weekdays[1].lastElementChild.textContent = '£12.00';
-
-    // weekday [2] is next free delivery
-    weekdays[2].classList.add('selected');
-
+    saturdayOneParent.parentElement.removeChild(saturdayOneParent);
+    weekdayOneParent.parentElement.removeChild(weekdayOneParent);
+    weekdayTwo.dataset.price = '12.00';
+    weekdayTwo.lastElementChild.textContent = '£12.00';
+    weekdayThree.classList.add('selected');
     return null;
   }
   // Friday after 12
   if (currentTime > 12 && today.includes('Fri')) {
-    // set weekday [0]  to be removed
-    nextDayParent.parentElement.removeChild(nextDayParent);
-
-    // set weekday [1] to be next day deliverey
-    weekdays[1].dataset.price = '12.00';
-    weekdays[1].lastElementChild.textContent = '£12.00';
-
-    // weekday [2] is next free delivery
-    weekdays[2].classList.add('selected');
-
-    // remove the next day (Saturday)
-    saturdays[0].parentElement.parentElement.removeChild(saturdays[0].parentElement);
+    weekdayOneParent.parentElement.removeChild(weekdayOneParent);
+    weekdayTwo.dataset.price = '12.00';
+    weekdayTwo.lastElementChild.textContent = '£12.00';
+    weekdayThree.classList.add('selected');
+    saturdayOneParent.parentElement.removeChild(saturdayOneParent);
+    return null;
   }
   // Friday before 12
   if (currentTime < 12 && today.includes('Fri')) {
-    nextFreeDelivery.classList.add('selected');
-    nextDayDelivery.dataset.price = '12.00';
-    nextDayDelivery.lastElementChild.textContent = '£12.00';
+    weekdayTwo.classList.add('selected');
+    weekdayOne.dataset.price = '12.00';
+    weekdayOne.lastElementChild.textContent = '£12.00';
     return null;
   }
-
   // Mon - Thurs after 12
   if (currentTime > 12) {
-    nextFreeDelivery.classList.add('selected');
-    nextDayParent.parentElement.removeChild(nextDayParent);
+    weekdayTwo.classList.add('selected');
+    weekdayOneParent.parentElement.removeChild(weekdayOneParent);
     return null;
   }
-
   // Mon - Thurs before 12
   if (currentTime < 12) {
-    nextFreeDelivery.classList.add('selected');
-    nextDayDelivery.dataset.price = '12.00';
-    nextDayDelivery.lastElementChild.textContent = '£12.00';
+    weekdayTwo.classList.add('selected');
+    weekdayOne.dataset.price = '12.00';
+    weekdayOne.lastElementChild.textContent = '£12.00';
     return null;
   }
   return null;
@@ -298,7 +282,7 @@ deliveryDaySelector.addEventListener('click', (e) => {
     enableDeliveryDates(saturdays, weekdays);
 
     // Is order after 12
-    getTimeOfDay();
+    setDeliveryDayOptions();
   }
 
   // Check current selection
@@ -352,7 +336,7 @@ deliveryTimeSelector.addEventListener('click', (e) => {
 setDynamicDeliveryPrice();
 
 // Is order after 12
-getTimeOfDay();
+setDeliveryDayOptions();
 
 // Get current selection
 getConfirmation();
