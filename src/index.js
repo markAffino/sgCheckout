@@ -64,6 +64,8 @@ const getTimeOfDay = () => {
   const today = moment().format('llll');
   const currentTime = moment().get('hour');
 
+  // add swicth statement here
+
 
   // Saturday before 12
   if (today.includes('Sat') || today.includes('Sun')) {
