@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Stone & Garden Checkout</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+</head>
+
+<body>
+  <div id="delivery__wrapper">
+    
+    <!-- Selects weekday or saturday -->
+    <div id="delivery__day-selector">
+      <h3>Choose your preferred day for delivery</h3>
+      <button id="delivery__day-weekday" class="active">
+        <span>Weekday Delivery</span>
+        <span>Available Monday to Friday, 8am - 6pm</span>
+      </button>
+      <button id="delivery__day-saturday" class="">
+        <span>Saturday Delivery</span>
+        <span>Available 8am - 6pm</span>
+      </button>
+    </div>
+
+    <!-- Lists out date options -->
+    <h3>Now choose your preferred date for delivery</h3>
+    <div id="delivery__date-selector" class="glide">
+      <div class="glide__track delivery__slider" data-glide-el="track">
+        <ul class="glide__slides">
+          <!-- Dynamic content added here -->
+        </ul>
+      </div>
+      <div data-glide-el="controls" class="glide__arrows">
+        <button class="glide__arrow glide__arrow--left" data-glide-dir="<">
+          <i class="fas fa-angle-left"></i></i>
+        </button>
+        <button class="glide__arrow glide__arrow--right" data-glide-dir=">">
+          <i class="fas fa-angle-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Selects all day or morning -->
+    <div id="delivery__time-selector">
+      <h3>Now choose your preferred time for delivery</h3>
+      <button id="delivery__time-allday" class="active">
+        <span>All Day</span>
+        <span>8am - 6pm</span>
+      </button>
+      <button id="delivery__time-am" class="">
+        <span>AM</span>
+        <span>8am - 12pm</span>
+      </button>
+    </div>
+
+    <!-- Confrims selection -->
+    <h3>You have selected</h3>
+    <div id="delivery__confirmation">
+      <span class="delivery__confirm-date">hello</span>
+      <span class="delivery__confirm-time"></span>
+      <span class="delivery__confirm-price"></span>
+    </div>
+
+  </div>
+
+
+  <script src="main.js"></script>
+</body>
+
+</html>
