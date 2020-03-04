@@ -79,7 +79,9 @@ body {
   background-color: #eee;
 }
 .delivery__date:disabled,
-.delivery__date.disabled {
+.delivery__date.disabled,
+#delivery__time-am:disabled,
+#delivery__time-am.disabled {
   background: #eee;
   color: #666;
   border-color: #ddd;
@@ -98,7 +100,7 @@ body {
   color: #666;
 }
 #delivery__date-selector {
-  width: calc(100% - 66px);
+  width: calc(100% - 60px);
   overflow: visible;
   margin-left: 33px;
   position: relative;
@@ -140,6 +142,9 @@ body {
 }
 .glide__track {
   padding-top: 10px;
+  width: 100%;
+  width: calc(100% + 4px);
+  /* padding-right: 10px; */
 }
 #delivery__day-selector + h3 {
   margin-bottom: 5px;
