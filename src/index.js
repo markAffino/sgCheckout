@@ -23,7 +23,7 @@ const deliveryDaySelector = deliveryOptions.querySelector('#delivery__day-select
 
 
 // Data from Magento?
-let excludedDates = ['16/03/2020', '17/03/2020', '24/12/2020', '25/12/2020', '26/12/2020'];
+let excludedDates = ['24/12/2020', '25/12/2020', '26/12/2020'];
 const saturdayDeliveryPrice = '54.00';
 const standardDeliveryPrice = '0.00';
 const amDeliveryPrice = '12.00';
@@ -49,77 +49,126 @@ const removeClassOnArray = (array, selector, classname) => {
 
 
 // Sets default based on time of day
-const getTimeOfDay = () => {
+const setDeliveryDayOptions = () => {
   const weekdays = [...deliveryDateSelector.querySelectorAll('.delivery__date-weekday')];
   const saturdays = [...deliveryDateSelector.querySelectorAll('.delivery__date-saturday')];
-  const nextDayDelivery = weekdays[0];
-  const nextDayParent = nextDayDelivery.parentElement;
-  const nextFreeDelivery = weekdays[1];
+  const weekdayOne = weekdays[0];
+  const weekdayOneParent = weekdayOne.parentElement;
+  const weekdayTwo = weekdays[1];
+  const weekdayThree = weekdays[2];
+  const saturdayOne = saturdays[0];
+  const saturdayOneParent = saturdayOne.parentElement;
 
   // Mock day & time
   // const currentTime = moment().set('hour', 9).get('hour');
-  // const today = moment().set('date', 7).format('llll');
+  // const today = moment().set('date', 4).format('llll');
 
   // Get current day & time
   const today = moment().format('llll');
   const currentTime = moment().get('hour');
 
 
-  // Saturday before 12
+  const hideDeliveryDates = (element) => {
+    const elem = element;
+    elem.style.width = 0;
+    elem.setAttribute('hidden', true);
+  };
+
+  // If Saturday or Sunday
   if (today.includes('Sat') || today.includes('Sun')) {
-    // remove first saturday
-    saturdays[0].parentElement.parentElement.removeChild(saturdays[0].parentElement);
+    hideDeliveryDates(weekdayOneParent);
 
-    // set weekday [0]  to be removed
-    nextDayParent.parentElement.removeChild(nextDayParent);
-
-    // set weekday [1] to be next day deliverey
-    weekdays[1].dataset.price = '12.00';
-    weekdays[1].lastElementChild.textContent = '£12.00';
-
-    // weekday [2] is next free delivery
-    weekdays[2].classList.add('selected');
-
+    // weekdayOneParent.parentElement.removeChild(weekdayOneParent);
+    weekdayTwo.dataset.price = '12.00';
+    weekdayTwo.lastElementChild.textContent = '£12.00';
+    weekdayThree.classList.add('selected');
     return null;
   }
   // Friday after 12
   if (currentTime > 12 && today.includes('Fri')) {
-    // set weekday [0]  to be removed
-    nextDayParent.parentElement.removeChild(nextDayParent);
-
-    // set weekday [1] to be next day deliverey
-    weekdays[1].dataset.price = '12.00';
-    weekdays[1].lastElementChild.textContent = '£12.00';
-
-    // weekday [2] is next free delivery
-    weekdays[2].classList.add('selected');
-
-    // remove the next day (Saturday)
-    saturdays[0].parentElement.parentElement.removeChild(saturdays[0].parentElement);
+    hideDeliveryDates(weekdayOneParent);
+    // weekdayOneParent.parentElement.removeChild(weekdayOneParent);
+    weekdayTwo.dataset.price = '12.00';
+    weekdayTwo.lastElementChild.textContent = '£12.00';
+    weekdayThree.classList.add('selected');
+    // saturdayOneParent.parentElement.removeChild(saturdayOneParent);
+    hideDeliveryDates(saturdayOneParent);
+    return null;
   }
   // Friday before 12
   if (currentTime < 12 && today.includes('Fri')) {
-    nextFreeDelivery.classList.add('selected');
-    nextDayDelivery.dataset.price = '12.00';
-    nextDayDelivery.lastElementChild.textContent = '£12.00';
+    weekdayTwo.classList.add('selected');
+    weekdayOne.dataset.price = '12.00';
+    weekdayOne.lastElementChild.textContent = '£12.00';
     return null;
   }
-
   // Mon - Thurs after 12
   if (currentTime > 12) {
-    nextFreeDelivery.classList.add('selected');
-    nextDayParent.parentElement.removeChild(nextDayParent);
+    weekdayTwo.dataset.price = '12.00';
+    weekdayTwo.lastElementChild.textContent = '£12.00';
+    weekdayThree.classList.add('selected');
+    hideDeliveryDates(weekdayOneParent);
+    // weekdayOneParent.parentElement.removeChild(weekdayOneParent);
     return null;
   }
-
   // Mon - Thurs before 12
   if (currentTime < 12) {
-    nextFreeDelivery.classList.add('selected');
-    nextDayDelivery.dataset.price = '12.00';
-    nextDayDelivery.lastElementChild.textContent = '£12.00';
+    weekdayTwo.classList.add('selected');
+    weekdayOne.dataset.price = '12.00';
+    weekdayOne.lastElementChild.textContent = '£12.00';
     return null;
   }
   return null;
+};
+
+// ========================================
+// Create 30 day date range (uses Moment.js lib)
+// ========================================
+
+const createDateRange = () => {
+  let allDates = [];
+  let currentDate = moment(new Date()).add(1, 'day');
+  const endDate = currentDate.clone().add(30, 'day');
+
+  while (currentDate <= endDate) {
+    let formattedDate = currentDate.locale('en-gb').format('llll');
+    if (formattedDate.indexOf('Sun') === -1) {
+      const displayDateFormat = moment(currentDate).locale('en-gb').format('llll');
+      const localDateFormat = moment(currentDate).locale('en-gb').format('L');
+
+      if (displayDateFormat.indexOf('Sat') >= 0) {
+        allDates = [...allDates, {
+          localdate: localDateFormat,
+          displaydate: displayDateFormat.slice(0, displayDateFormat.length - 11),
+          price: saturdayDeliveryPrice,
+          day: 'delivery__date-saturday',
+          state: 'disabled',
+        }];
+      } else {
+        allDates = [...allDates, {
+          localdate: localDateFormat,
+          displaydate: displayDateFormat.slice(0, displayDateFormat.length - 11),
+          price: standardDeliveryPrice,
+          day: 'delivery__date-weekday',
+          state: '',
+        }];
+      }
+    }
+    currentDate = moment(currentDate).add(1, 'days');
+  }
+
+  // Get excluded dates and format to match
+  let excludedDatesFormatted = [];
+  excludedDates.forEach((date) => {
+    const localFormat = moment(date, 'DD/MM/YYYY', true).locale('en-gb').format('L');
+    excludedDatesFormatted = [...excludedDatesFormatted, localFormat];
+  });
+
+  // Filter out the excluded list
+  allDates = allDates.filter((date) => excludedDatesFormatted.indexOf(date.localdate) === -1);
+
+  // Return array
+  return allDates;
 };
 
 
@@ -186,57 +235,6 @@ const getConfirmation = () => {
 
 
 // ========================================
-// Create 30 day date range (uses Moment.js lib)
-// ========================================
-
-const createDateRange = () => {
-  let allDates = [];
-  let currentDate = moment(new Date()).add(1, 'day');
-  const endDate = currentDate.clone().add(30, 'day');
-
-  while (currentDate <= endDate) {
-    let formattedDate = currentDate.locale('en-gb').format('llll');
-    if (formattedDate.indexOf('Sun') === -1) {
-      const displayDateFormat = moment(currentDate).locale('en-gb').format('llll');
-      const localDateFormat = moment(currentDate).locale('en-gb').format('L');
-
-      if (displayDateFormat.indexOf('Sat') >= 0) {
-        allDates = [...allDates, {
-          localdate: localDateFormat,
-          displaydate: displayDateFormat.slice(0, displayDateFormat.length - 11),
-          price: saturdayDeliveryPrice,
-          day: 'delivery__date-saturday',
-          state: 'disabled',
-        }];
-      } else {
-        allDates = [...allDates, {
-          localdate: localDateFormat,
-          displaydate: displayDateFormat.slice(0, displayDateFormat.length - 11),
-          price: standardDeliveryPrice,
-          day: 'delivery__date-weekday',
-          state: '',
-        }];
-      }
-    }
-    currentDate = moment(currentDate).add(1, 'days');
-  }
-
-  // Get excluded dates and format to match
-  let excludedDatesFormatted = [];
-  excludedDates.forEach((date) => {
-    const localFormat = moment(date, 'DD/MM/YYYY', true).locale('en-gb').format('L');
-    excludedDatesFormatted = [...excludedDatesFormatted, localFormat];
-  });
-
-  // Filter out the excluded list
-  allDates = allDates.filter((date) => excludedDatesFormatted.indexOf(date.localdate) === -1);
-
-  // Return array
-  return allDates;
-};
-
-
-// ========================================
 // Refine date format, and create element
 // ========================================
 
@@ -274,6 +272,7 @@ deliveryDaySelector.addEventListener('click', (e) => {
   const saturdaySelector = deliveryOptions.querySelector('#delivery__day-saturday');
   const saturdays = [...deliveryDateSelector.querySelectorAll('.delivery__date-saturday')];
   const weekdays = [...deliveryDateSelector.querySelectorAll('.delivery__date-weekday')];
+  const amDelivery = deliveryOptions.querySelector('#delivery__time-am');
 
   if (!e.target.matches('button')) return;
   // Remove all classes from day selector
@@ -290,13 +289,26 @@ deliveryDaySelector.addEventListener('click', (e) => {
   if (saturdaySelector.classList.contains('active')) {
     enableDeliveryDates(weekdays, saturdays);
 
-    // Does this need a rule/function?
-    saturdays[0].classList.add('selected');
+    // Set first saturday as selected
+    // if saturday[0] is hidden
+    // set selected to next visible
+    if (!saturdays[0].parentElement.hasAttribute('hidden')) {
+      saturdays[0].classList.add('selected');
+    } else {
+      saturdays[1].classList.add('selected');
+    }
+
+
+    // Disbale AM delivery
+    amDelivery.setAttribute('disabled', true);
   } else {
     enableDeliveryDates(saturdays, weekdays);
 
+    // Enable AM delivery
+    amDelivery.removeAttribute('disabled');
+
     // Is order after 12
-    getTimeOfDay();
+    setDeliveryDayOptions();
   }
 
   // Check current selection
@@ -350,7 +362,7 @@ deliveryTimeSelector.addEventListener('click', (e) => {
 setDynamicDeliveryPrice();
 
 // Is order after 12
-getTimeOfDay();
+setDeliveryDayOptions();
 
 // Get current selection
 getConfirmation();
